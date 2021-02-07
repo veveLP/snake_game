@@ -20,16 +20,14 @@ using namespace std;
 	int returned = 0;
 	int High_score = 0;
 	string poz[11][11];
-	int log_x[1000];
-	int log_y[1000];
-	int last_w = 0;
-	int last_h = 0;
+	int log_i[1000];
+	int log_j[1000];
 	int snake1_i = 5;
 	int snake1_j = 5;
 	
-	int variable_set() {
+int variable_set() {
 		 x = 1, y = 1;
-		 tail = 0;
+		 tail = 1;
 		 tail_last = 0;
 		 moved = 0;
 		 gameover = false;
@@ -38,30 +36,27 @@ using namespace std;
 		 score = 0;
 		 was_berry = true;
 		 returned = 0;
-		 //High_score = 0;
-		 log_x[1000];
-		 log_y[1000];
-		 last_w = 0;
-		 last_h = 0;
 		 snake1_i = 5;
 		 snake1_j = 5; return 0; }
 
 int berry() {
-start:
+	
+	
 	if (poz[x][y] == "x " && was_berry == true) { berry_pocet = 0; score++;  time_multi /= 1.05; was_berry = false; tail++; }
-	if (poz[x][y] == "0 ") { was_berry = true; }
+	else if (poz[x][y] == "0 ") { was_berry = true; }
 	else { was_berry = false; }
 	if (berry_pocet == 0) {
-		srand(time(0));
+	start:
 		y = rand() % 9 + 1;
-		srand(time(0));
 		x = rand() % 9 + 1;
 		if (poz[x][y] == "x " || poz[x][y] == "# ") {
-
+			y = rand() % 9 + 1;
+			x = rand() % 9 + 1;
 			goto start;
 		}
 		else { poz[x][y] = "0 ";  berry_pocet=1; }
 	}
+	if (poz[x][y] != "0 ") { berry_pocet = 0; }
 	return 0;
 }
 
@@ -110,26 +105,24 @@ int getpress() {
 	
 }
 
-
-	
-
-
 int move() {
 	
 	
-	poz[snake1_i][snake1_j] = "  "; 
 	
-	
+	if (score > 0) { poz[log_i[moved - tail]][log_j[moved - tail]] = "  "; }
+	else { poz[snake1_i][snake1_j] = "  "; }
 	if (returned == 1) { snake1_i--; if (snake1_i < 1) { gameover = true; }}
 	if (returned == 2) { snake1_i++; if (snake1_i > 9) { gameover = true; }}
 	if (returned == 3) { snake1_j--; if (snake1_j < 1) { gameover = true; }}
 	if (returned == 4) { snake1_j++; if (snake1_j > 9) { gameover = true; }}
-	
-	
+	log_i[moved] = snake1_i;
+	log_j[moved] = snake1_j;
+	if (poz[snake1_i][snake1_j] == "x ") { gameover = true; return 0;}
 	poz[snake1_i][snake1_j] = "x ";
-
-
 	
+
+
+	moved++;
 	return 0;
 }
 
@@ -147,7 +140,7 @@ int draw() {
 			cout << poz[i][j] << "";
 			
 			if (i == 0 && j == 10) {
-				cout << "\tScore:" << score;
+				cout << "\tScore:" << score << ", " << x << ", " << y;
 			}
 
 		}
@@ -174,6 +167,7 @@ int setup() {
 
 int main()
 {
+	srand(time(0));
 	int rep = 0;
 	while (rep != 2) {
 		variable_set();
@@ -188,7 +182,6 @@ int main()
 			getpress();
 			system("cls");
 			move();
-
 			draw();
 			Sleep(time_multi);
 
